@@ -133,7 +133,7 @@ def tests_multiple_reverts_and_claims():
             ),
         ],
     )
-    assert len(result) == 3
+    assert len(results) == 3
     keys = []
     for result in results:
         if result["npi"] == "4444444444" and result["ndc"] == "00093752910":
