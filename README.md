@@ -5,7 +5,7 @@
 - Pydantic
 
 
-#### Virtual Environment Setup
+### Virtual Environment Setup
 It’s recommended to create a Python virtual environment to isolate the project’s dependencies.
 
 1.	Create a virtual environment:
@@ -21,6 +21,13 @@ source venv/bin/activate
 3. You can install all dependencies using:
 ```
 pip install requirements.txt
+```
+
+### How to run
+
+Access the root folder and run
+```
+python3 -m src.main
 ```
 
 ### Testing
