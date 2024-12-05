@@ -9,14 +9,3 @@ class Claim(BaseModel):
     price: float
     quantity: float
     timestamp: datetime
-
-
-class Revert(BaseModel):
-    id: str
-    claim_id: str
-    timestamp: datetime
-
-
-class Pharmacy(BaseModel):
-    id: str
-    chain: str
