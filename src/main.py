@@ -4,7 +4,6 @@ from .services.analytics import Analytics as AnalyticsService
 import logging
 import os
 
-# Configure logging: set the level and format
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -50,7 +49,7 @@ if __name__ == "__main__":
     analytics_service = AnalyticsService(allowed_npis=npis_list)
 
     results = analytics_service.compute_metrics(claims=claims, reverts=reverts)
-    logging.info("Results:")
-    logging.info(json.dumps(results, indent=2))
+    logging.info("Saving results to output.json")
     with open("output.json", "w") as f:
         json.dump(results, f, indent=2)
+    logging.info("Results has been saved succesfully")
