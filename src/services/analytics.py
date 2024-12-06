@@ -46,10 +46,18 @@ class Analytics(AnalyticsInterface):
                     "total_quantity": claim.quantity,
                 }
 
-        # logging.info("Claims compute before reverts: %s" % data.values())
-
-        # # compute reverts
-        # logging.info("Claims compute after reverts: %s" % data)
+        for revert in reverts:
+            if revert.claim_id not in claims_by_id.keys():
+                logging.info(
+                    f"Ignored revert {revert.id} because there is no valid claim_id linked to it"
+                )
+                continue
+            claim_data = claims_by_id[revert.claim_id]
+            claim_key = claim_data["key"]
+            data[claim_key]["total_price"] -= claim_data["price"]
+            data[claim_key]["total_quantity"] -= claim_data["quantity"]
+            data[claim_key]["fills"] -= 1
+            data[claim_key]["reverted"] += 1
 
         for key_data, value in data.items():
             if value["total_quantity"] > 0:
@@ -63,8 +71,8 @@ class Analytics(AnalyticsInterface):
                     "ndc": key_data[1],  # ndc
                     "fills": value["fills"],
                     "reverted": value["reverted"],
-                    "avg_price": avg_price,
-                    "total_price": value["total_price"],
+                    "avg_price": round(avg_price, 2),
+                    "total_price": round(value["total_price"], 2),
                 }
             )
 

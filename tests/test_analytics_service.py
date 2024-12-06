@@ -2,7 +2,6 @@ import pytest
 from src.services.analytics import Analytics
 from src.models.claim import Claim
 from src.models.revert import Revert
-from datetime import date
 
 
 def test_single_claim_no_revert():
@@ -29,8 +28,8 @@ def test_single_claim_no_revert():
     assert result[0]["ndc"] == "00093752910"
     assert result[0]["fills"] == 1
     assert result[0]["reverted"] == 0
-    assert result[0]["avg_price"] == 123.4
-    assert result[0]["total_price"] == 123.4
+    assert result[0]["avg_price"] == 676.1
+    assert result[0]["total_price"] == 60849.0
 
 
 def test_claim_with_revert():
@@ -90,8 +89,8 @@ def tests_multiple_reverts_and_claims():
                     "id": "9b778873-d84d-497b-8c04-f1235252",
                     "ndc": "1422343245",
                     "npi": "123452523",
-                    "quantity": 150.0,
-                    "price": 2342.0,
+                    "quantity": 5.0,
+                    "price": 10.0,
                     "timestamp": "2024-03-01T21:09:01",
                 }
             ),
@@ -100,8 +99,8 @@ def tests_multiple_reverts_and_claims():
                     "id": "9b778873-d84d-497b-8c04-f12352524",
                     "ndc": "1422343245",
                     "npi": "123452523",
-                    "quantity": 350.0,
-                    "price": 6342.0,
+                    "quantity": 1.0,
+                    "price": 10.0,
                     "timestamp": "2024-03-01T21:09:01",
                 }
             ),
@@ -110,7 +109,7 @@ def tests_multiple_reverts_and_claims():
                     "id": "9b778873-d84d-497b-8c04-f3525245",
                     "ndc": "14223432423425",
                     "npi": "123452522343",
-                    "quantity": 110.0,
+                    "quantity": 100.0,
                     "price": 2342.0,
                     "timestamp": "2024-03-01T21:09:01",
                 }
@@ -127,7 +126,7 @@ def tests_multiple_reverts_and_claims():
             Revert(
                 **{
                     "id": "509ec2fe-f2db-4da0-bef3-9cb4fd54dfe7",
-                    "claim_id": "9b778873-d84d-497b-8c04-f3525245",
+                    "claim_id": "9b778873-d84d-497b-8c04-f1235252",
                     "timestamp": "2024-04-02T21:41:19",
                 },
             ),
@@ -147,17 +146,18 @@ def tests_multiple_reverts_and_claims():
             assert result["npi"] == "123452523"
             assert result["ndc"] == "1422343245"
             assert result["fills"] == 1
-            assert result["reverted"] == 0
-            assert result["avg_price"] == 250.0
-            assert result["total_price"] == 8684.0
+            assert result["reverted"] == 1
+            assert result["avg_price"] == 10.0
+            assert result["total_price"] == 10.0
         elif result["npi"] == "123452522343" and result["ndc"] == "14223432423425":
             assert result["npi"] == "123452522343"
             assert result["ndc"] == "14223432423425"
-            assert result["fills"] == 0
-            assert result["reverted"] == 1
-            assert result["avg_price"] == 0.0
-            assert result["total_price"] == 0.0
+            assert result["fills"] == 1
+            assert result["reverted"] == 0
+            assert result["avg_price"] == 23.42
+            assert result["total_price"] == 2342.0
         keys.append((result["npi"], result["ndc"]))
+
     assert ("123452522343", "14223432423425") in keys
     assert ("123452523", "1422343245") in keys
     assert ("4444444444", "00093752910") in keys
