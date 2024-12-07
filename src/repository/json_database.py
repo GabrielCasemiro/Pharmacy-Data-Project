@@ -1,16 +1,19 @@
+import csv
 import json
 import os
 from .db_interface import DatabaseInterface
 from ..models.claim import Claim
 from ..models.revert import Revert
+from ..models.pharmacy import Pharmacy
 from typing import List
 import logging
 
 
 class JSONDatabase(DatabaseInterface):
-    def __init__(self, claims_dir: str, reverts_dir: str):
+    def __init__(self, claims_dir: str, reverts_dir: str, pharmacies_dir: str):
         self.claims_dir = claims_dir
         self.reverts_dir = reverts_dir
+        self.pharmacies_dir = pharmacies_dir
 
     def retrieve_claims(self) -> List[Claim]:
         claims = []
@@ -47,3 +50,22 @@ class JSONDatabase(DatabaseInterface):
                                 % (record, filepath, str(ex))
                             )
         return reverts
+
+    def retrieve_pharmacies(self) -> List[Pharmacy]:
+        pharmacies = []
+        for filename in os.listdir(self.pharmacies_dir):
+            if filename.endswith(".csv"):
+                filepath = os.path.join(self.pharmacies_dir, filename)
+
+                with open(filepath, "r") as csv_file:
+                    reader = csv.DictReader(csv_file)
+                    for row in reader:
+                        try:
+                            pharmacy = Pharmacy(chain=row["chain"], npi=row["npi"])
+                            pharmacies.append(pharmacy)
+                        except Exception as ex:
+                            logging.warning(
+                                "Fail to process pharmacy record %s from file %s due to %s"
+                                % (row, filepath, str(ex))
+                            )
+        return pharmacies
