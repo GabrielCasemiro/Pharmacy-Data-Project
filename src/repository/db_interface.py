@@ -14,3 +14,8 @@ class DatabaseInterface(ABC):
     def retrieve_reverts(self) -> List[Revert]:
         """Read revert events from the data source"""
         pass
+
+    @abstractmethod
+    def retrieve_pharmacies(self) -> List[Revert]:
+        """Read pharmacies from the data source"""
+        pass
