@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     logging.info("Initializing script...")
+    output_file_list = []
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(current_dir, ".."))
     claims_dir = os.path.join(project_root, "data", "claims")
@@ -33,8 +34,23 @@ if __name__ == "__main__":
     analytics_service = AnalyticsService(allowed_npis=npis_list)
 
     metrics = analytics_service.compute_metrics(claims=claims, reverts=reverts)
-
-    logging.info("Saving results to output.json")
-    with open("output.json", "w") as f:
-        json.dump(metrics, f, indent=2)
-    logging.info("Results has been saved succesfully")
+    output_file_list.append({"filename": "metrics", "value": metrics})
+    drug_recommendation_by_chains = analytics_service.drug_recommendation_by_chains(
+        claims=claims, reverts=reverts, pharmacies=pharmacies
+    )
+    output_file_list.append(
+        {
+            "filename": "drug_recommendation_by_chains",
+            "value": drug_recommendation_by_chains,
+        }
+    )
+    # most_prescribed_quantity_by_drug = (
+    #     analytics_service.most_prescribed_quantity_by_drug(
+    #         claims=claims, reverts=reverts, pharmacies=pharmacies
+    #     )
+    # )
+    for result in output_file_list:
+        logging.info("Saving results to metrics.json")
+        with open("%s.json" % result["filename"], "w") as f:
+            json.dump(result["value"], f, indent=2)
+        logging.info("Results has been saved succesfully")

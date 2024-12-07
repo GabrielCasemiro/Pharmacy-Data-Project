@@ -2,6 +2,7 @@ import pytest
 from src.services.analytics import Analytics
 from src.models.claim import Claim
 from src.models.revert import Revert
+from src.models.pharmacy import Pharmacy
 
 
 def test_single_claim_no_revert():
@@ -183,3 +184,68 @@ def test_claim_non_allowed_npi():
         reverts=[],
     )
     assert len(result) == 0
+
+
+def test_drug_recommendation_by_chains_simple():
+    # Allowed NPIs (pharmacies)
+    allowed_npis = {"1234567890", "7890123456", "2222222222"}
+    analytics = Analytics(allowed_npis=allowed_npis)
+
+    # Pharmacies and their chains
+    pharmacies = [
+        Pharmacy(chain="health", npi="1234567890"),
+        Pharmacy(chain="saint", npi="7890123456"),
+        Pharmacy(chain="doctor", npi="2222222222"),
+    ]
+
+    # Claims for a single NDC from three different chains
+    # saint: total_price=100, total_quantity=5 => avg=20.0
+    # doctor: total_price=210, total_quantity=10 => avg=21.0
+    # health: total_price=300, total_quantity=10 => avg=30.0
+    claims = [
+        Claim(
+            id="194c7bbc-c9f6-4d6f-a4c7-83028ae2c857",
+            ndc="00015066812",
+            npi="1234567890",
+            quantity=10.0,
+            price=300.0,
+            timestamp="2024-03-01T21:09:01",
+        ),
+        Claim(
+            id="204c7bbc-c9f6-4d6f-a4c7-83028ae2c852",
+            ndc="00015066812",
+            npi="7890123456",
+            quantity=5.0,
+            price=100.0,
+            timestamp="2024-03-01T21:09:01",
+        ),
+        Claim(
+            id="214c7bbc-c9f6-4d6f-a4c7-83028ae2c853",
+            ndc="00015066812",
+            npi="2222222222",
+            quantity=10.0,
+            price=210.0,
+            timestamp="2024-03-01T21:09:01",
+        ),
+    ]
+
+    reverts = []
+
+    results = analytics.drug_recommendation_by_chains(
+        claims=claims, reverts=reverts, pharmacies=pharmacies
+    )
+
+    # We expect:
+    # NDC: 00015066812
+    # Chains sorted by avg_price: saint(20.0), doctor(21.0), health(30.0)
+
+    assert len(results) == 1
+    assert results[0]["ndc"] == "00015066812"
+    top_chains = results[0]["chain"]
+    assert len(top_chains) == 2
+
+    # Check top two chains
+    assert top_chains[0]["name"] == "saint"
+    assert top_chains[0]["avg_price"] == 20.0
+    assert top_chains[1]["name"] == "doctor"
+    assert top_chains[1]["avg_price"] == 21.0
