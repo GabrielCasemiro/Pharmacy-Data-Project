@@ -61,7 +61,9 @@ class JSONDatabase(DatabaseInterface):
                     reader = csv.DictReader(csv_file)
                     for row in reader:
                         try:
-                            pharmacy = Pharmacy(chain=row["chain"], npi=row["npi"])
+                            pharmacy = Pharmacy(
+                                chain=row["chain"].replace(" ", ""), npi=row["npi"]
+                            )
                             pharmacies.append(pharmacy)
                         except Exception as ex:
                             logging.warning(
