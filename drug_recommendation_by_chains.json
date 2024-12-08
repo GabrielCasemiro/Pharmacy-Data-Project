@@ -1,0 +1,132 @@
+[
+  {
+    "ndc": "49884024302",
+    "chain": [
+      {
+        "name": "saint",
+        "avg_price": 65.6
+      },
+      {
+        "name": "doctor",
+        "avg_price": 260.09
+      }
+    ]
+  },
+  {
+    "ndc": "00002323401",
+    "chain": [
+      {
+        "name": "saint",
+        "avg_price": 1.76
+      },
+      {
+        "name": "health",
+        "avg_price": 292.38
+      }
+    ]
+  },
+  {
+    "ndc": "00015066812",
+    "chain": [
+      {
+        "name": "saint",
+        "avg_price": 109.81
+      },
+      {
+        "name": "doctor",
+        "avg_price": 161.95
+      }
+    ]
+  },
+  {
+    "ndc": "00078017705",
+    "chain": [
+      {
+        "name": "saint",
+        "avg_price": 65.04
+      },
+      {
+        "name": "doctor",
+        "avg_price": 398.38
+      }
+    ]
+  },
+  {
+    "ndc": "00031074998",
+    "chain": [
+      {
+        "name": "health",
+        "avg_price": 125.03
+      },
+      {
+        "name": "doctor",
+        "avg_price": 166.03
+      }
+    ]
+  },
+  {
+    "ndc": "55154445200",
+    "chain": [
+      {
+        "name": "saint",
+        "avg_price": 60.84
+      },
+      {
+        "name": "health",
+        "avg_price": 332.18
+      }
+    ]
+  },
+  {
+    "ndc": "63323036410",
+    "chain": [
+      {
+        "name": "health",
+        "avg_price": 181.6
+      },
+      {
+        "name": "doctor",
+        "avg_price": 452.24
+      }
+    ]
+  },
+  {
+    "ndc": "00054027225",
+    "chain": [
+      {
+        "name": "doctor",
+        "avg_price": 368.91
+      },
+      {
+        "name": "health",
+        "avg_price": 517.76
+      }
+    ]
+  },
+  {
+    "ndc": "00093752910",
+    "chain": [
+      {
+        "name": "saint",
+        "avg_price": 214.24
+      },
+      {
+        "name": "health",
+        "avg_price": 344.68
+      }
+    ]
+  },
+  {
+    "ndc": "00046110481",
+    "chain": [
+      {
+        "name": "saint",
+        "avg_price": 207.55
+      },
+      {
+        "name": "health",
+        "avg_price": 238.25
+      }
+    ]
+  }
+]
