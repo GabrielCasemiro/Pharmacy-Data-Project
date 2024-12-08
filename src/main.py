@@ -31,12 +31,15 @@ if __name__ == "__main__":
     logging.info(f"Number of reverts retrieved: {len(reverts)}")
     pharmacies = db_obj.retrieve_pharmacies()
     npis_list = [pharmacy.npi for pharmacy in pharmacies]
-    analytics_service = AnalyticsService(allowed_npis=npis_list)
+    analytics_service = AnalyticsService()
 
+    # --- metrics  ---
     metrics = analytics_service.compute_metrics(claims=claims, reverts=reverts)
     output_file_list.append({"filename": "metrics", "value": metrics})
+
+    # --- drug_recommendation_by_chains ---
     drug_recommendation_by_chains = analytics_service.drug_recommendation_by_chains(
-        claims=claims, reverts=reverts, pharmacies=pharmacies
+        claims=claims, reverts=reverts, pharmacies=pharmacies, allowed_npis=npis_list
     )
     output_file_list.append(
         {
@@ -44,11 +47,20 @@ if __name__ == "__main__":
             "value": drug_recommendation_by_chains,
         }
     )
-    # most_prescribed_quantity_by_drug = (
-    #     analytics_service.most_prescribed_quantity_by_drug(
-    #         claims=claims, reverts=reverts, pharmacies=pharmacies
-    #     )
-    # )
+
+    # --- most_prescribed_quantity_by_drug ---
+    most_prescribed_quantity_by_drug = (
+        analytics_service.most_prescribed_quantity_by_drug(
+            claims=claims, reverts=reverts
+        )
+    )  # consider all npis
+
+    output_file_list.append(
+        {
+            "filename": "most_prescribed_quantity_by_drug",
+            "value": most_prescribed_quantity_by_drug,
+        }
+    )
     for result in output_file_list:
         logging.info("Saving results to metrics.json")
         with open("%s.json" % result["filename"], "w") as f:
