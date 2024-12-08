@@ -6,6 +6,8 @@ from src.models.claim import Claim
 from src.models.revert import Revert
 from src.models.pharmacy import Pharmacy
 
+import sys
+
 
 @pytest.fixture
 def setup_directories(tmp_path):

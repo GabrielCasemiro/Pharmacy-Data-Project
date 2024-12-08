@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from ..models.claim import Claim
-from ..models.revert import Revert
+from src.models.claim import Claim
+from src.models.revert import Revert
 from typing import List
 
 

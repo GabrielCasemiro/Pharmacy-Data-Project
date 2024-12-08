@@ -1,9 +1,9 @@
 import logging
-from ..models.claim import Claim
-from ..models.revert import Revert
-from ..models.pharmacy import Pharmacy
+from src.models.claim import Claim
+from src.models.revert import Revert
+from src.models.pharmacy import Pharmacy
 from .analytics_interface import AnalyticsInterface
-from typing import List, Dict
+from typing import List
 import json
 
 
@@ -24,13 +24,13 @@ class Analytics(AnalyticsInterface):
         for claim in claims:
             if allowed_npis:
                 if claim.npi not in allowed_npis:
-                    logging.info(
+                    logging.debug(
                         f"Ignored claim {claim.npi} because it's not included in the allowed npis list"
                     )
                     continue
 
             if claim.id in claims_by_id:
-                logging.info(f"Ignored claim {claim.npi} because it's duplicated")
+                logging.debug(f"Ignored claim {claim.npi} because it's duplicated")
                 continue
 
             key = (claim.npi, claim.ndc)
@@ -56,7 +56,7 @@ class Analytics(AnalyticsInterface):
         # Process reverts
         for revert in reverts:
             if revert.claim_id not in claims_by_id:
-                logging.info(
+                logging.debug(
                     f"Ignored revert {revert.id} because there is no valid claim_id linked to it"
                 )
                 continue
@@ -164,7 +164,7 @@ class Analytics(AnalyticsInterface):
 
             if allowed_npis:
                 if claim.npi not in allowed_npis:
-                    logging.info(
+                    logging.debug(
                         f"most_prescribed_quantity_by_drug: Ignored claim {claim.npi} because it's not included in the allowed npis list"
                     )
                     continue

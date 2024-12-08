@@ -2,9 +2,9 @@ import csv
 import json
 import os
 from .db_interface import DatabaseInterface
-from ..models.claim import Claim
-from ..models.revert import Revert
-from ..models.pharmacy import Pharmacy
+from src.models.claim import Claim
+from src.models.revert import Revert
+from src.models.pharmacy import Pharmacy
 from typing import List
 import logging
 
