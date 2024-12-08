@@ -1,8 +1,42 @@
 # Pharmacy-Data-Project
 
-### Requirements
-- Python 3.8+
-- Pydantic
+This project processes pharmacy claims, revert events, and pharmacy data to compute various metrics and insights:
+1. **Metrics for some dimensions (Goal 2):** Calculated metrics such as fills, reverted claims, average unit price, and total price per `(npi, ndc)`.
+2. **Drug Recommendation by Chains (Goal 3):** Identifies the top two cheapest chains per drug based on average unit price.
+3. **Most Prescribed Quantity by Drug (Goal 4):** Lists the most common prescribed quantities per drug to help negotiate price discounts.
+
+## Project Structure
+```
+project/
+├─ data/
+│  ├─ claims/        # JSON claims files
+│  ├─ reverts/       # JSON reverts files
+│  └─ pharmacies/    # CSV file mapping npis to chains
+├─ src/
+│  ├─ init.py
+│  ├─ main.py        # Entry point of the application
+│  ├─ models/        # Pydantic models (Claim, Revert, Pharmacy)
+│  ├─ repository/    # Data retrieval (JSONDatabase, etc.)
+│  └─ services/      # Analytics services (Analytics class)
+├─ tests/             # Unit tests
+├─ requirements.txt   # Python dependencies
+├─ metrics.json       # Output for Goal 2
+├─ drug_recommendation_by_chains.json  # Output for Goal 3
+└─ most_prescribed_quantity_by_drug.json # Output for Goal 4
+```
+
+## Prerequisites
+
+- Python 3.8+ installed
+- `pip` to install dependencies
+- Docker (if you want to run using Docker)
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone git@github.com:GabrielCasemiro/Pharmacy-Data-Project.git
+   cd Pharmacy-Data-Project
 
 
 ### Virtual Environment Setup
@@ -23,12 +57,23 @@ source venv/bin/activate
 pip install requirements.txt
 ```
 
-### How to run
+### Running the Application
 
-Access the root folder and run
+Make sure your data directory is populated with:
+- data/claims/*.json
+- data/reverts/*.json
+- data/pharmacies/*.csv
+
+Then run:
 ```
-python3 -m src.main
+python3 src/main.py
 ```
+
+The application will:
+- Process claims and reverts.
+- Generate the metrics.json file for Goal 2.
+- Generate drug_recommendation_by_chains.json for Goal 3. (For this goal, only the pharmacies listed in the pharmacies csv files will be considered)
+- Generate most_prescribed_quantity_by_drug.json for Goal 4.
 
 ### Testing
 
@@ -39,3 +84,64 @@ To run tests, make sure you are in the project’s root directory and that your 
 pytest tests
 ```
 
+### Running with Docker
+
+1. Build the docker image 
+```
+docker build -t pharmacy-data-project:latest .
+```
+
+2.	Run the container:
+```
+docker run --rm -v $(pwd)/data:/app/data -v $(pwd):/app pharmacy-data-project:latest
+```
+
+After the container finishes, you should see the output files (metrics.json, drug_recommendation_by_chains.json, most_prescribed_quantity_by_drug.json) in your local directory.
+
+### Outputs
+- metrics.json (Goal 2): Contains aggregated metrics by (npi, ndc).
+- drug_recommendation_by_chains.json (Goal 3): Shows the top 2 cheapest chains per drug.(For this goal, only the pharmacies listed in the pharmacies csv files will be considered)
+- most_prescribed_quantity_by_drug.json (Goal 4): Lists the most common prescribed quantities per drug.
+#### Example Outputs
+metrics.json
+```
+[
+  {
+    "npi": "0000000000",
+    "ndc": "00002323401",
+    "fills": 82,
+    "reverted": 4,
+    "avg_price": 377.56,
+    "total_price": 2509345.2
+  },
+  ...
+]
+```
+drug_recommendation_by_chains.json
+```
+[
+  {
+    "ndc": "00015066812",
+    "chain": [
+      {
+        "name": "health",
+        "avg_price": 377.56
+      },
+      {
+        "name": "saint",
+        "avg_price": 413.40
+      }
+    ]
+  },
+  ...
+]
+```
+most_prescribed_quantity_by_drug.json
+```
+[
+  {
+    "ndc": "00002323401",
+    "most_prescribed_quantity": [8.5, 15.0, 45.0, ...]
+  }
+]
+```
