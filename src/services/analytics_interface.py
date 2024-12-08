@@ -20,7 +20,7 @@ class AnalyticsInterface(ABC):
 
     @abstractmethod
     def most_prescribed_quantity_by_drug(
-        self, claims: List[Claim], reverts: List[Revert], pharmacies: List[Pharmacy]
+        self, claims: List[Claim], reverts: List[Revert]
     ) -> List[Dict]:
         """Compute drug most common quantity prescribed"""
         pass

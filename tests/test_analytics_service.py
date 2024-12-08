@@ -7,7 +7,7 @@ from src.models.pharmacy import Pharmacy
 
 def test_single_claim_no_revert():
     allowed_npis = {"4444444444"}
-    analytics = Analytics(allowed_npis=allowed_npis)
+    analytics = Analytics()
 
     result = analytics.compute_metrics(
         claims=[
@@ -23,6 +23,7 @@ def test_single_claim_no_revert():
             )
         ],
         reverts=[],
+        allowed_npis=allowed_npis,
     )
     assert len(result) == 1
     assert result[0]["npi"] == "4444444444"
@@ -35,7 +36,7 @@ def test_single_claim_no_revert():
 
 def test_claim_with_revert():
     allowed_npis = {"4444444444"}
-    analytics = Analytics(allowed_npis=allowed_npis)
+    analytics = Analytics()
 
     result = analytics.compute_metrics(
         claims=[
@@ -59,6 +60,7 @@ def test_claim_with_revert():
                 },
             )
         ],
+        allowed_npis=allowed_npis,
     )
     assert len(result) == 1
     assert result[0]["npi"] == "4444444444"
@@ -71,7 +73,7 @@ def test_claim_with_revert():
 
 def tests_multiple_reverts_and_claims():
     allowed_npis = {"4444444444", "123452523", "123452522343"}
-    analytics = Analytics(allowed_npis=allowed_npis)
+    analytics = Analytics()
 
     results = analytics.compute_metrics(
         claims=[
@@ -132,6 +134,7 @@ def tests_multiple_reverts_and_claims():
                 },
             ),
         ],
+        allowed_npis=allowed_npis,
     )
     assert len(results) == 3
     keys = []
@@ -166,7 +169,7 @@ def tests_multiple_reverts_and_claims():
 
 def test_claim_non_allowed_npi():
     allowed_npis = {"4444444444"}
-    analytics = Analytics(allowed_npis=allowed_npis)
+    analytics = Analytics()
 
     result = analytics.compute_metrics(
         claims=[
@@ -182,6 +185,7 @@ def test_claim_non_allowed_npi():
             )
         ],
         reverts=[],
+        allowed_npis=allowed_npis,
     )
     assert len(result) == 0
 
@@ -189,7 +193,7 @@ def test_claim_non_allowed_npi():
 def test_drug_recommendation_by_chains_simple():
     # Allowed NPIs (pharmacies)
     allowed_npis = {"1234567890", "7890123456", "2222222222"}
-    analytics = Analytics(allowed_npis=allowed_npis)
+    analytics = Analytics()
 
     # Pharmacies and their chains
     pharmacies = [
@@ -199,7 +203,7 @@ def test_drug_recommendation_by_chains_simple():
     ]
 
     # Claims for a single NDC from three different chains
-    # saint: total_price=100, total_quantity=5 => avg=20.0
+    # saint: total_ice=100, total_quantity=5 => avg=20.0
     # doctor: total_price=210, total_quantity=10 => avg=21.0
     # health: total_price=300, total_quantity=10 => avg=30.0
     claims = [

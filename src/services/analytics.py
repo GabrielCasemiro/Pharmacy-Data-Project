@@ -8,21 +8,22 @@ import json
 
 
 class Analytics(AnalyticsInterface):
-    def __init__(self, allowed_npis) -> None:
-        self.allowed_npis = allowed_npis
+    def __init__(self) -> None:
+        pass
 
-    def __process_claims_and_reverts(self, claims: List[Claim], reverts: List[Revert]):
+    def __process_claims_and_reverts(
+        self, claims: List[Claim], reverts: List[Revert], allowed_npis=[]
+    ):
         """
         Process claims and reverts, returning:
-        - claims_by_id: A dictionary by claim_id with { 'key': (npi, ndc), 'price': float, 'quantity': float }
         - data: A dictionary by (npi, ndc) with aggregated metrics -> fills, reverted, total_price, total_quantity
         """
         claims_by_id = {}
         data = {}
 
         for claim in claims:
-            if self.allowed_npis:
-                if claim.npi not in self.allowed_npis:
+            if allowed_npis:
+                if claim.npi not in allowed_npis:
                     logging.info(
                         f"Ignored claim {claim.npi} because it's not included in the allowed npis list"
                     )
@@ -66,12 +67,14 @@ class Analytics(AnalyticsInterface):
             data[claim_key]["fills"] -= 1
             data[claim_key]["reverted"] += 1
 
-        return claims_by_id, data
+        return data
 
-    def compute_metrics(self, claims: List[Claim], reverts: List[Revert]):
+    def compute_metrics(
+        self, claims: List[Claim], reverts: List[Revert], allowed_npis=[]
+    ):
         results = []
-        claims_by_id, data = self.__process_claims_and_reverts(
-            claims=claims, reverts=reverts
+        data = self.__process_claims_and_reverts(
+            claims=claims, reverts=reverts, allowed_npis=allowed_npis
         )
 
         for key_data, value in data.items():
@@ -94,11 +97,15 @@ class Analytics(AnalyticsInterface):
         return results
 
     def drug_recommendation_by_chains(
-        self, claims: List[Claim], reverts: List[Revert], pharmacies: List[Pharmacy]
+        self,
+        claims: List[Claim],
+        reverts: List[Revert],
+        pharmacies: List[Pharmacy],
+        allowed_npis=[],
     ):
 
-        claims_by_id, data = self.__process_claims_and_reverts(
-            claims=claims, reverts=reverts
+        data = self.__process_claims_and_reverts(
+            claims=claims, reverts=reverts, allowed_npis=allowed_npis
         )  # data: (npi, npc) ->  fills, reverted, total_price, total_quantity
 
         npi_to_chain = {}
@@ -146,12 +153,41 @@ class Analytics(AnalyticsInterface):
         return results
 
     def most_prescribed_quantity_by_drug(
-        self, claims: List[Claim], reverts: List[Revert], pharmacies: List[Pharmacy]
+        self, claims: List[Claim], reverts: List[Revert], allowed_npis=[]
     ):
-        """Compute drug most common quantity prescribed"""
-        return [
-            {
-                "ndc": "00002323401",
-                "most_prescribed_quantity": [8.5, 15.0, 45.0, 180.0, 2.0],
+        prescribed_drugs_by_quantity = {}
+        results = []
+        reverts_ids = [revert.claim_id for revert in reverts]
+        for claim in claims:
+            if claim.id in reverts_ids:
+                continue
+
+            if allowed_npis:
+                if claim.npi not in allowed_npis:
+                    logging.info(
+                        f"most_prescribed_quantity_by_drug: Ignored claim {claim.npi} because it's not included in the allowed npis list"
+                    )
+                    continue
+
+            if claim.ndc not in prescribed_drugs_by_quantity.keys():
+                prescribed_drugs_by_quantity[claim.ndc] = {claim.quantity: 1}
+            elif claim.quantity in prescribed_drugs_by_quantity[claim.ndc].keys():
+                prescribed_drugs_by_quantity[claim.ndc][claim.quantity] += 1
+            else:
+                prescribed_drugs_by_quantity[claim.ndc][claim.quantity] = 1
+
+        for key, value in prescribed_drugs_by_quantity.items():
+            most_prescribed_quantity_list = []
+            sorted_by_value_desc = sorted(
+                value.items(), key=lambda x: x[1], reverse=True
+            )
+
+            for quantity_key, times in sorted_by_value_desc:
+                most_prescribed_quantity_list.append(quantity_key)
+            ndc_result = {
+                "ndc": key,
+                "most_prescribed_quantity": most_prescribed_quantity_list,
             }
-        ]
+            results.append(ndc_result)
+
+        return results
