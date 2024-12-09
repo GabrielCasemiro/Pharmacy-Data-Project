@@ -44,7 +44,7 @@ This project uses [Pydantic](https://pydantic-docs.helpmanual.io/) models (in `s
    By enforcing a strict schema, all processing steps can rely on data having a consistent structure and type. For example, `price` is always a float and `timestamp` is always a valid datetime. This consistency reduces errors and simplifies the logic in the analytics steps.
 
 3. **Easier Debugging and Maintenance:**  
-   When the data schema is well-defined and enforced, it’s easier to pinpoint issues if something goes wrong. Developers can be confident that unexpected behavior is likely not caused by malformed data, because Pydantic has already enforced the schema rules.
+   When the data schema is well-defined and enforced, it’s easier to pinpoint issues if something goes wrong. Developers can be confident that unexpected behavior is likely not caused by malformed data, because Pydantic has already enforced the schema rules
 
 ## Installation
 
@@ -173,3 +173,20 @@ most_prescribed_quantity_by_drug.json
   }
 ]
 ```
+
+## Performance Summary
+
+28 claims files
+4 reverts files
+| Method          | Goal 2 Time | Goal 3 Time | Goal 4 Time | All         |
+|-----------------|-------------|-------------|-------------|-------------|
+| Normal          | 0.14s       | 0.15s       | 0.20s       | 0.27s       |
+| Multiprocessing | 0.45s       | 0.53s       | 0.20s       | 0.84s       |
+
+
+228 claims files
+16 reverts files
+| Method          | Goal 2 Time | Goal 3 Time | Goal 4 Time | All         |
+|-----------------|-------------|-------------|-------------|-------------|
+| Normal          | 0.14s       | 0.15s       | 0.20s       | 0.27s       |
+| Multiprocessing | 0.45s       | 0.53s       | 0.20s       | 0.84s       |

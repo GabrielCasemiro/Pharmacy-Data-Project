@@ -1,12 +1,11 @@
-import sys, os
+import sys, os, time
 import argparse
 import json
 import logging
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from src.repository.json_database import JSONDatabase as Database
-from src.services.analytics import Analytics as AnalyticsService
+from src.services.analytics_parallel import Analytics as AnalyticsService
 
 logging.basicConfig(
     level=logging.INFO,
@@ -16,6 +15,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
+    start = time.perf_counter()
     parser = argparse.ArgumentParser(description="Pharmacy Data Project")
     parser.add_argument(
         "--goals",
@@ -47,9 +47,9 @@ if __name__ == "__main__":
         claims_dir=claims_dir, reverts_dir=reverts_dir, pharmacies_dir=pharmacies_dir
     )
 
-    claims = db_obj.retrieve_claims()
+    claims = db_obj.retrieve_claims() * 100
     logging.info(f"Number of claims retrieved: {len(claims)}")
-    reverts = db_obj.retrieve_reverts()
+    reverts = db_obj.retrieve_reverts() * 100
     logging.info(f"Number of reverts retrieved: {len(reverts)}")
     pharmacies = db_obj.retrieve_pharmacies()
     npis_list = [pharmacy.npi for pharmacy in pharmacies]
@@ -89,7 +89,9 @@ if __name__ == "__main__":
                 "value": most_prescribed_quantity_by_drug,
             }
         )
+    end = time.perf_counter()
 
+    print(f"JSONDatabaseParallel load time: {end - start:.2f} seconds")
     # Save results to data/outputs
     for result in output_file_list:
         output_path = os.path.join(output_dir, f"{result['filename']}.json")
