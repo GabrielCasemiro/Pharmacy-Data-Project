@@ -58,7 +58,11 @@ if __name__ == "__main__":
 
     # Goal 2: Compute metrics
     if run_goal_2:
-        metrics = analytics_service.compute_metrics(claims=claims, reverts=reverts)
+        metrics = analytics_service.compute_metrics(
+            claims=claims,
+            reverts=reverts,
+            allowed_npis=npis_list,
+        )
         output_file_list.append({"filename": "metrics", "value": metrics})
 
     # Goal 3: Drug recommendation by chains
@@ -80,7 +84,7 @@ if __name__ == "__main__":
     if run_goal_4:
         most_prescribed_quantity_by_drug = (
             analytics_service.most_prescribed_quantity_by_drug(
-                claims=claims, reverts=reverts
+                claims=claims, reverts=reverts, allowed_npis=npis_list
             )
         )
         output_file_list.append(
