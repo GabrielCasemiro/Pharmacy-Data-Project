@@ -185,4 +185,4 @@ most_prescribed_quantity_by_drug.json
 
 The multiprocessing code can be found in the branch [parallel_processing](https://github.com/GabrielCasemiro/Pharmacy-Data-Project/blob/parallel_processing/src/services/analytics_parallel.py).
 
-We can notice the multiprocessing strategy was slower than normal processing. I believe it's because the overhead of parallelization outweighed the benefits in this particular scenario. As we have a Small Dataset, the overhead of creating new processes, transferring data between them, and collecting results can be more expensive than just processing the files sequentially. Parallelization often shows its strengths with larger workloads.
+We can notice the multiprocessing strategy was slower than normal processing. It happened because the overhead of parallelization outweighed the benefits in this particular scenario. As we have a Small Dataset, the overhead of creating new processes, transferring data between them, and collecting results can be more expensive than just processing the files sequentially. Parallelization often shows its strengths with larger workloads.
