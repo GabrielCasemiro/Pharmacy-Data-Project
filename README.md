@@ -32,6 +32,20 @@ project/
 - `pip` to install dependencies
 - Docker (if you want to run using Docker)
 
+
+## Why Pydantic?
+
+This project uses [Pydantic](https://pydantic-docs.helpmanual.io/) models (in `src/models`) to define the schema for Claims, Reverts, and Pharmacy records. Pydantic ensures that each record entering the processing pipeline adheres to a defined schema. This provides a few key benefits:
+
+1. **Data Validation:**  
+   Before any processing steps occur, each record is validated against the Pydantic model. Invalid data is either corrected or excluded early on, preventing corrupt or malformed data from reaching deeper stages of the pipeline.
+
+2. **Consistent Types and Structure:**  
+   By enforcing a strict schema, all processing steps can rely on data having a consistent structure and type. For example, `price` is always a float and `timestamp` is always a valid datetime. This consistency reduces errors and simplifies the logic in the analytics steps.
+
+3. **Easier Debugging and Maintenance:**  
+   When the data schema is well-defined and enforced, it’s easier to pinpoint issues if something goes wrong. Developers can be confident that unexpected behavior is likely not caused by malformed data, because Pydantic has already enforced the schema rules.
+
 ## Installation
 
 1. Clone the repository:
