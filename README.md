@@ -9,9 +9,13 @@ This project processes pharmacy claims, revert events, and pharmacy data to comp
 ```
 project/
 ├─ data/
-│  ├─ claims/        # JSON claims files
-│  ├─ reverts/       # JSON reverts files
-│  └─ pharmacies/    # CSV file mapping npis to chains
+│  ├─ claims/      # JSON claims files
+│  ├─ reverts/     # JSON reverts files
+│  └─ pharmacies/  # CSV file mapping npis to chains
+│  └─ outputs/     # JSON output files for goals 2, 3, and 4
+│     └─ metrics.json                          # Output for Goal 2
+│     └─ drug_recommendation_by_chains.json    # Output for Goal 3
+│     └─ most_prescribed_quantity_by_drug.json # Output for Goal 4
 ├─ src/
 │  ├─ init.py
 │  ├─ main.py        # Entry point of the application
@@ -19,10 +23,7 @@ project/
 │  ├─ repository/    # Data retrieval (JSONDatabase, etc.)
 │  └─ services/      # Analytics services (Analytics class)
 ├─ tests/             # Unit tests
-├─ requirements.txt   # Python dependencies
-├─ metrics.json       # Output for Goal 2
-├─ drug_recommendation_by_chains.json  # Output for Goal 3
-└─ most_prescribed_quantity_by_drug.json # Output for Goal 4
+└─ requirements.txt   # Python dependencies
 ```
 
 ## Prerequisites
@@ -30,6 +31,20 @@ project/
 - Python 3.8+ installed
 - `pip` to install dependencies
 - Docker (if you want to run using Docker)
+
+
+## Why Pydantic?
+
+This project uses [Pydantic](https://pydantic-docs.helpmanual.io/) models (in `src/models`) to define the schema for Claims, Reverts, and Pharmacy records. Pydantic ensures that each record entering the processing pipeline adheres to a defined schema. This provides a few key benefits:
+
+1. **Data Validation:**  
+   Before any processing steps occur, each record is validated against the Pydantic model. Invalid data is either corrected or excluded early on, preventing corrupt or malformed data from reaching deeper stages of the pipeline.
+
+2. **Consistent Types and Structure:**  
+   By enforcing a strict schema, all processing steps can rely on data having a consistent structure and type. For example, `price` is always a float and `timestamp` is always a valid datetime. This consistency reduces errors and simplifies the logic in the analytics steps.
+
+3. **Easier Debugging and Maintenance:**  
+   When the data schema is well-defined and enforced, it’s easier to pinpoint issues if something goes wrong. Developers can be confident that unexpected behavior is likely not caused by malformed data, because Pydantic has already enforced the schema rules.
 
 ## Installation
 
@@ -64,16 +79,29 @@ Make sure your data directory is populated with:
 - data/reverts/*.json
 - data/pharmacies/*.csv
 
-Then run:
+Then run :
 ```
 python3 src/main.py
 ```
+This will run all goals (2, 3, and 4) by default.
 
 The application will:
 - Process claims and reverts.
 - Generate the metrics.json file for Goal 2.
 - Generate drug_recommendation_by_chains.json for Goal 3. (For this goal, only the pharmacies listed in the pharmacies csv files will be considered)
 - Generate most_prescribed_quantity_by_drug.json for Goal 4.
+
+### Running Specific Goals
+
+You can specify which goals to run using the --goals argument:
+```
+python3 src/main.py --goals 2 3
+```
+This will run only Goal 2 and Goal 3. Similarly:
+- --goals 2 runs only Goal 2.
+- --goals 3 runs only Goal 3.
+- --goals 4 runs only Goal 4.
+- --goals 2 4 runs Goals 2 and 4, skipping Goal 3.
 
 ### Testing
 
